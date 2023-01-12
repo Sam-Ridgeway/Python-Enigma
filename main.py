@@ -5,18 +5,20 @@ class Enigma:
         self._rotor2 = 'AJDKSIRUXBLHWTMCQGZNPYFVOE'
         self._rotor3 = 'BDFHJLCPRTXVZNYEIWGAKMUSQO'
         self._reflector = 'AY BR CU DH EQ FS GL IP JX KN MO TZ VW'
+        self._plugboard = 'LO PK US'
         #Ring settings
-        self._rs1 = self._Alphabet.find('J')
-        self._rs2 = self._Alphabet.find('F')
-        self._rs3 = self._Alphabet.find('K')
+        self._rs1 = self._Alphabet.find('I')
+        self._rs2 = self._Alphabet.find('J')
+        self._rs3 = self._Alphabet.find('S')
         #Initial Positions
-        self._pos1 = (self._Alphabet.find('A') - self._rs1) % 26
-        self._pos2 = (self._Alphabet.find('A') - self._rs2) % 26
-        self._pos3 = (self._Alphabet.find('A') - self._rs3) % 26
+        self._pos1 = (self._Alphabet.find('B') - self._rs1) % 26
+        self._pos2 = (self._Alphabet.find('B') - self._rs2) % 26
+        self._pos3 = (self._Alphabet.find('C') - self._rs3) % 26
         #Turnover Positions
-        self._turn_1 = (self._rotor1.find('R')  - self._rs1) % 26 
-        self._turn_2 = (self._rotor2.find('F')  - self._rs2) % 26
-        self._turn_3 = (self._rotor3.find('W')  - self._rs3) % 26
+        self._turn_1 = (self._Alphabet.find('R')  - self._rs1) % 26 
+        self._turn_2 = (self._Alphabet.find('F')  - self._rs2) % 26
+        self._turn_3 = (self._Alphabet.find('W')  - self._rs3) % 26
+        
 
     
     def decode_msg(self,Message):
@@ -34,7 +36,14 @@ class Enigma:
                 #Double Stepping
                 self._pos2 = (self._pos2 + 1) % 26  
             print('Letter in: ' + letter)
-            index_in = self._Alphabet.find(letter)
+            
+            #Plugboard initial
+            letter_in = letter
+            for pair in self._plugboard.split(' '):
+                if letter in pair:
+                    letter_in = (pair.replace(letter,''))   
+
+            index_in = self._Alphabet.find(letter_in)
             #Forwards bit
             index_1_in = (index_in + self._pos3) % 26
             letter_1 = self._rotor3[index_1_in]
@@ -49,14 +58,10 @@ class Enigma:
             index_3_out = (self._Alphabet.find(letter_3) - self._pos1) % 26
             print("L3: " + self._Alphabet[index_3_out])
             #Reflector
-            index_reflect = self._reflector.find(self._Alphabet[index_3_out])
-            if(self._reflector[index_reflect - 1] == ' '):
-                #print("+1 : " + str(index_reflect))
-                reflected_letter = self._reflector[index_reflect + 1]
-            else:
-                reflected_letter = self._reflector[index_reflect - 1]
-                #print("-1 : " + str(index_reflect))
-
+            reflected_letter = 'A' #Default value should never be used
+            for pair in self._reflector.split(' '):
+                if self._Alphabet[index_3_out] in pair:
+                    reflected_letter = pair.replace(self._Alphabet[index_3_out],'')
             index_r_out = self._Alphabet.find(reflected_letter)
             print("Reflect: " + reflected_letter)
             #Backwards bit
@@ -74,8 +79,12 @@ class Enigma:
             letter_6 = self._Alphabet[index_6_in]
             index_6_out = (self._rotor3.find(letter_6) - self._pos3) % 26
             print("L6: " + self._Alphabet[index_6_out])
-            
             letter_out = self._Alphabet[index_6_out]
+            #Plugboard final
+            for pair in self._plugboard.split(' '):
+                if letter_out in pair:
+                    letter_out = (pair.replace(letter_out,''))
+
             if(len(Ciphertext) % 6 == 5 and len(Ciphertext) != 0):
                 Ciphertext += ' '
             Ciphertext += letter_out
@@ -86,4 +95,4 @@ class Enigma:
 
 
 mymachine = Enigma()
-print(mymachine.decode_msg('test message to see how rollover works'))
+print(mymachine.decode_msg('test message to see how tickover works'))
