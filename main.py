@@ -1,11 +1,11 @@
 class Enigma:
-    def __init__(self):
+    def __init__(self,plugboard):
         self._Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         self._rotor1 = 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'
         self._rotor2 = 'AJDKSIRUXBLHWTMCQGZNPYFVOE'
         self._rotor3 = 'BDFHJLCPRTXVZNYEIWGAKMUSQO'
         self._reflector = 'AY BR CU DH EQ FS GL IP JX KN MO TZ VW'
-        self._plugboard = 'LO PK US'
+        self._plugboard = plugboard
         #Ring settings
         self._rs1 = self._Alphabet.find('I')
         self._rs2 = self._Alphabet.find('J')
@@ -92,7 +92,3 @@ class Enigma:
             
 
         return Ciphertext
-
-
-mymachine = Enigma()
-print(mymachine.decode_msg('test message to see how tickover works'))
